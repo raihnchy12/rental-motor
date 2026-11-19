@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sistem Rental Motor Yogyakarta (MVP)
 
-## Getting Started
+Platform rental motor online berbasis web untuk wilayah Yogyakarta dengan sistem ketersediaan real-time, penentuan harga dan denda otomatis (Policy Engine dengan snapshot), serta zero double-booking yang dijamin oleh database constraint PostgreSQL (`EXCLUDE USING gist`).
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Cara Menjalankan Proyek
+
+### Prasyarat
+
+- **Node.js**: v20+ atau v22+
+- **Package Manager**: `pnpm` (disarankan v9+)
+- **Database**: PostgreSQL 16+ dengan ekstensi `btree_gist`
+
+### Langkah Instalasi
+
+1. Clone repositori dan masuk ke direktori proyek:
+   ```bash
+   cd web-rental-motor
+   ```
+2. Pasang dependensi:
+   ```bash
+   pnpm install
+   ```
+3. Siapkan environment file:
+   ```bash
+   cp .env.example .env
+   ```
+   Sesuaikan `DATABASE_URL` dan konfigurasi environment lainnya.
+4. Generate Prisma Client & jalankan migrasi database:
+   ```bash
+   pnpm db:migrate
+   ```
+5. Jalankan server pengembangan (development):
+   ```bash
+   pnpm dev
+   ```
+   Buka [http://localhost:3000](http://localhost:3000) di browser.
+
+### Perintah Pengujian & Build
+
+- **Typecheck**: `pnpm typecheck`
+- **Linting**: `pnpm lint`
+- **Unit & Integration Test**: `pnpm test`
+- **Production Build**: `pnpm build` (atau `pnpm next build --webpack` untuk lingkungan bundling spesifik)
+
+---
+
+## 📁 Struktur Folder Proyek
+
+```
+src/
+├── app/
+│   ├── (public)/                 # Rute publik (katalog motor, cek booking, dll.)
+│   │   ├── page.tsx              # Landing page publik
+│   │   ├── motor/
+│   │   │   ├── page.tsx          # Katalog motor
+│   │   │   └── [id]/page.tsx     # Detail unit motor
+│   │   └── cek-status/page.tsx   # Cek status pemesanan
+│   ├── (admin)/admin/            # Panel manajemen admin (/admin/*)
+│   │   ├── login/page.tsx        # Halaman login admin (tanpa sidebar)
+│   │   └── (panel)/              # Halaman ber-layout sidebar admin
+│   │       ├── dashboard/page.tsx # Ringkasan metrik & tindakan
+│   │       ├── timeline/page.tsx  # Kalender pemesanan armada & buffer
+│   │       ├── armada/page.tsx    # Manajemen unit & blackout
+│   │       ├── transaksi/page.tsx # Konfirmasi DP, pelunasan & refund
+│   │       ├── pelanggan/page.tsx # Data pelanggan & riwayat blacklist
+│   │       └── pengaturan/page.tsx# Konfigurasi sistem
+│   ├── api/                      # Endpoint API (webhook, cron, dsb.)
+│   ├── layout.tsx                # Root layout
+│   └── globals.css               # Styling global Tailwind CSS
+├── components/
+│   ├── ui/                       # Komponen antarmuka dasar shadcn/ui
+│   ├── booking/                  # Komponen alur pemesanan
+│   ├── admin/                    # Komponen khusus panel admin
+│   └── shared/                   # Komponen bersama
+├── lib/                          # Modul utilitas & konfigurasi (prisma, auth, pricing, dsb.)
+├── server/
+│   ├── actions/                  # Server Actions Next.js (mutasi data)
+│   └── queries/                  # Query data & data fetching layer
+├── types/                        # Definisi tipe TypeScript global (tanpa 'any')
+tests/
+├── unit/                         # Unit tests logika bisnis & helper
+├── integration/                  # Pengujian integrasi komponen & query DB
+└── e2e/                          # End-to-end tests alur pengguna
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📐 Konvensi Pengembangan & Aturan Utama
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Server Actions untuk Mutasi Data**:
+   - Seluruh mutasi data (create, update, delete) wajib menggunakan Next.js Server Actions (`"use server"`).
+   - API route (`/api/...`) hanya digunakan untuk kebutuhan webhook, Vercel cron job, atau endpoint publik eksternal.
 
-## Learn More
+2. **Validasi Server-Side dengan Zod**:
+   - Seluruh payload input ke Server Actions dan API route WAJIB divalidasi menggunakan Zod schema sebelum diproses.
 
-To learn more about Next.js, take a look at the following resources:
+3. **Bebas Tipe `any` (Strict TypeScript)**:
+   - Dilarang keras menggunakan tipe `any`. Gunakan interface/type eksplisit, `unknown` dengan type-narrowing, atau type inference Prisma/Zod.
+   - Pengecualian hanya berlaku untuk raw SQL query PostgreSQL khusus (`$queryRaw`) dengan komentar dokumentasi yang jelas.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. **Waktu dan Standar UTC di Database**:
+   - Semua penyimpanan tanggal dan waktu (`DateTime`) di database PostgreSQL WAJIB bertipe `@db.Timestamptz(3)` dan berada dalam format UTC.
+   - Konversi ke Waktu Indonesia Barat (WIB / Asia/Jakarta, UTC+7) HANYA dilakukan pada layer antarmuka pengguna (UI render dan input form).
+   - Dilarang memanipulasi timezone secara manual di layer database queries.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. **Penanganan Uang & Durasi**:
+   - Nilai uang disimpan sebagai integer Rupiah (tanpa desimal/float).
+   - Durasi sewa dibulatkan ke atas per jam (`Math.ceil`). Keterlambatan dihitung dalam menit.

@@ -1,0 +1,19 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Model contoh awal untuk verifikasi Prisma Client
+model Motor {
+  id          String   @id @default(cuid())
+  nama        String
+  platNomor   String   @unique
+  hargaSewa   Int
+  status      String   @default("READY")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
