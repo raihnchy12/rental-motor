@@ -560,7 +560,7 @@ Deploy hello-world ke Vercel.
 - **Story:** US-1.1 — Setup project
 - **Estimate:** 1h
 - **Dependencies:** SETUP-009
-- **Status:** [ ] Not Started
+- **Status:** [x] Completed
 
 **Description:**
 
@@ -568,8 +568,8 @@ Verifikasi manual: buka URL preview Vercel (HTTP 200). Dengan ENABLE_DEBUG_ROUTE
 
 **Acceptance Criteria:**
 
-- [ ] Skenario verifikasi di atas dijalankan dan hasilnya sesuai harapan
-- [ ] Hasil (lulus/gagal) dan temuan dicatat di PR atau catatan sprint
+- [x] Skenario verifikasi di atas dijalankan dan hasilnya sesuai harapan
+- [x] Hasil (lulus/gagal) dan temuan dicatat di PR atau catatan sprint
 
 ---
 
