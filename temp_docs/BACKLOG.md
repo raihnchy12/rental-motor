@@ -323,7 +323,7 @@ Sprint 6 = Minggu 8–9   : Laporan, Ops & Pre-Launch
 
 ---
 
-## Sprint 0 — Fondasi
+x## Sprint 0 — Fondasi
 
 **Sprint Goal:** Project terdeploy, database dengan constraint anti double-booking, login admin berfungsi.
 
@@ -510,7 +510,7 @@ Pasang Sentry untuk Next.js (`pnpm dlx @sentry/wizard@latest -i nextjs`) atau ko
 - **Story:** US-1.1 — Setup project
 - **Estimate:** 1h
 - **Dependencies:** SETUP-007
-- **Status:** [ ] Not Started
+- **Status:** [x] Completed
 
 **Description:**
 
@@ -524,8 +524,8 @@ Siapkan kualitas kode.
 
 **Acceptance Criteria:**
 
-- [ ] Commit dengan pesan "update" ditolak, "chore: setup tooling" diterima, dan CI hijau.
-- [ ] `pnpm typecheck`, `pnpm lint`, dan `pnpm test` lulus tanpa error
+- [x] Commit dengan pesan "update" ditolak, "chore: setup tooling" diterima, dan CI hijau.
+- [x] `pnpm typecheck`, `pnpm lint`, dan `pnpm test` lulus tanpa error
 
 ---
 
